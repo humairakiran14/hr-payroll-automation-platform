@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+hr_payroll.db
+backups/
+logs/*.log
