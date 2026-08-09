@@ -1,5 +1,4 @@
 import streamlit as st
-from utils.exceptions import InvalidSalaryError
 import pandas as pd
 from auth.auth_manager import check_login, hash_password
 from models.employee import Employee
@@ -46,10 +45,13 @@ if st.session_state.logged_in:
 
         if st.button("Add Employee"):
             if new_name and new_dept and new_desig and new_salary and new_username and new_password:
-                new_emp_id = add_employee(new_name, new_dept, new_desig, new_salary)
-                add_user(new_username, hash_password(new_password), "Employee", new_emp_id)
-                st.success(f"Employee {new_name} added successfully with login username '{new_username}'.")
-                log_action(f"New employee added: {new_name}, ID: {new_emp_id}", role)
+                try:
+                    new_emp_id = add_employee(new_name, new_dept, new_desig, new_salary)
+                    add_user(new_username, hash_password(new_password), "Employee", new_emp_id)
+                    st.success(f"Employee {new_name} added successfully with login username '{new_username}'.")
+                    log_action(f"New employee added: {new_name}, ID: {new_emp_id}", role)
+                except Exception as e:
+                    st.error(f"Username '{new_username}' is already taken. Please try again with a different username.")
             else:
                 st.error("Please fill in all fields to add a new employee.")
 
@@ -61,9 +63,6 @@ if st.session_state.logged_in:
             st.dataframe(df, use_container_width=True)
         else:
             st.info("No employees found. Please add employees to see the list.")
-
-
-        
 
     # ---------------- ADMIN + HR: Attendance ----------------
     if role in ["Admin", "HR"]:
@@ -92,7 +91,7 @@ if st.session_state.logged_in:
         else:
             st.info("No attendance records found.")
 
-       # ---------------- ADMIN: Payroll and Backups ----------------
+        # ---------------- ADMIN: Payroll and Backups ----------------
         if role == "Admin":
             st.subheader("Payroll")
             employees = get_all_employees()
@@ -102,14 +101,9 @@ if st.session_state.logged_in:
                 selected_payroll_emp = st.selectbox("Select Employee for Payroll", list(payroll_emp_options.keys()), key="payroll_select")
 
                 if st.button("Calculate Salary"):
-                  try:
                     emp_id = payroll_emp_options[selected_payroll_emp]
                     emp_data = get_employee_by_id(emp_id)
                     basic_salary = emp_data[4]
-                    if basic_salary <= 0:
-                      raise InvalidSalaryError("Employee salary must be greater than zero.")
-                
-                
                     present_days = get_present_days(emp_id)
 
                     per_day_salary = basic_salary / 30
@@ -118,10 +112,8 @@ if st.session_state.logged_in:
                     st.success(f"Present Days: {present_days}")
                     st.success(f"Final Salary: {round(final_salary, 2)}")
                     log_action(f"Payroll calculated for Employee ID: {emp_id}, Present Days: {present_days}, Final Salary: {round(final_salary, 2)}", role)
-                  except InvalidSalaryError as e:
-                      st.error(f"Error: {str(e)}")
-                else:
-                    st.info("Add employees first to calculate payroll.")
+            else:
+                st.info("Add employees first to calculate payroll.")
 
             st.subheader("Database Backup")
             if st.button("Backup Database Now"):
@@ -129,7 +121,6 @@ if st.session_state.logged_in:
                 st.success(f"Backup created: {path}")
                 log_action(f"Database backup created", username)
 
-                
     # ---------------- EMPLOYEE: My Attendance ----------------
     if role == "Employee":
         st.subheader("My Attendance")
