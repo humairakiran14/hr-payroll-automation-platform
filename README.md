@@ -24,16 +24,18 @@ A production-style solution demonstrating authentication, documentation, testing
 - **Custom Exceptions** — Domain-specific error handling (`utils/exceptions.py`)
 
 ## Project Structure
+```
 hr_payroll_system/
-├── app.py # Main Streamlit entry point
-├── config.py # App configuration
-├── create_admin.py # One-time script to seed Admin/HR users
-├── auth/ # Authentication logic
-├── database/ # Database connection, CRUD, backup
-├── models/ # Data models (Employee)
-├── utils/ # Logging, custom exceptions
-├── logs/ # Auto-generated log files
-├── backups/ # Auto-generated database backups
+├── app.py              # Main Streamlit entry point
+├── config.py            # App configuration
+├── create_admin.py      # One-time script to seed Admin/HR users
+├── auth/                 # Authentication logic
+├── database/             # Database connection, CRUD, backup
+├── models/               # Data models (Employee)
+├── utils/                # Logging, custom exceptions
+├── logs/                 # Auto-generated log files
+└── backups/              # Auto-generated database backups
+```
 
 ## Setup Instructions
 
