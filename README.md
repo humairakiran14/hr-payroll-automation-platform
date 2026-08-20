@@ -52,4 +52,5 @@ hr_payroll_system/
 
 ## Author
 
-Humaira — Python Development Intern, Aptura Tech Solutions (Batch 02)
+Humaira Kiran - Python Development Intern
+
